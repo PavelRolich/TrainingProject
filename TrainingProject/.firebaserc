@@ -1,0 +1,11 @@
+{
+  "targets": {
+    "fitnesstracker-15e07": {
+      "hosting": {
+        "TrainingProject": [
+          "fitnesstracker-15e07"
+        ]
+      }
+    }
+  }
+}
