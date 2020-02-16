@@ -3,7 +3,8 @@ import { Exercise } from './model/exercise.model';
 import { Subject } from 'rxjs/Subject';
 import { Subscription } from 'rxjs/Subscription';
 import { UIService } from '../shared/ui.service';
-import { AngularFirestore } from '@angular/fire/firestore/firestore';
+import { AngularFirestore } from '@angular/fire/firestore';
+import 'firebase/firestore';
 import { map } from 'rxjs/operators';
 
 @Injectable({
@@ -24,16 +25,15 @@ export class TrainingService {
     this.fbSubs.push(this.db
       .collection('availableExercises')
       .snapshotChanges()
-      .pipe(map(docArray => {
-        return docArray.map(doc => {
-          return {
-            id: doc.payload.doc.id,
-            name: doc.payload.doc.data().name,
-            duration: doc.payload.doc.data().duration,
-            calories: doc.payload.doc.data().calories
-          };
-        });
-      }))
+      .pipe(
+        map(docArray => {
+          return docArray.map(doc => {
+            const data = doc.payload.doc.data() as Exercise;
+            const idExercise = doc.payload.doc.id;
+            return {idExercise, ...data};
+          });
+        })
+      )
       .subscribe((exercises: Exercise[]) => {
         this.uiService.loadingStateChanged.next(false);
         this.availableExercises = exercises;
