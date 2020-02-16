@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { Exercise } from './model/exercise.model';
+import { Exercise, ExerciseFromFirebase } from './model/exercise.model';
 import { Subject } from 'rxjs/Subject';
 import { Subscription } from 'rxjs/Subscription';
 import { UIService } from '../shared/ui.service';
@@ -29,8 +29,12 @@ export class TrainingService {
         map(docArray => {
           return docArray.map(doc => {
             const data = doc.payload.doc.data() as Exercise;
-            const idExercise = doc.payload.doc.id;
-            return {idExercise, ...data};
+            return {
+              id: doc.payload.doc.id,
+              name: data.name,
+              duration: data.duration,
+              calories: data.calories
+            };
           });
         })
       )
@@ -82,7 +86,17 @@ export class TrainingService {
     this.fbSubs.push(this.db
       .collection('finishedExercises')
       .valueChanges()
-      .subscribe((exercises: Exercise[]) => {
+      .subscribe((exercisesFromFirebase: ExerciseFromFirebase[]) => {
+        const exercises: Exercise[] = exercisesFromFirebase.map(ex => {
+          return {
+            id: ex.id,
+            name: ex.name,
+            duration: ex.duration,
+            calories: ex.calories,
+            date: ex.date.toDate(),
+            state: ex.state
+          };
+        });
         this.finishedExercisesChanged.next(exercises);
       }));
   }
