@@ -35,7 +35,12 @@ import { redusers } from './app.reducer';
     AngularFireModule.initializeApp(environment.firebase),
     AuthModule,
     AngularFirestoreModule,
-    StoreModule.forRoot(redusers),
+    StoreModule.forRoot(redusers, {
+      runtimeChecks: {
+        strictStateImmutability: true,
+        strictActionImmutability: true
+      }
+    }),
   ],
   providers: [AuthService, TrainingService, UIService],
   bootstrap: [AppComponent]
